@@ -1,5 +1,5 @@
 <template>
-    <div id="app">
+    <div class="register">
         <v-container>
             <v-row class="justify-center justify-md-center align-center">
                 <v-col
@@ -78,14 +78,14 @@
 
                             <v-row class="pt-7 pb-7 justify-center">
                                 <p class="pr-5 pt-2">Masz konto?</p>
-                                <router-link to="/login">
-                                    <v-btn
-                                            text color="#3eb4a7"
-                                            class="register pr-5 pt-2"
-                                    >
-                                        Zaloguj się
-                                    </v-btn>
-                                </router-link>
+
+                                <v-btn
+                                        outlined
+                                        to="/login"
+                                        color="#3eb4a7"
+                                >
+                                    Zaloguj się
+                                </v-btn>
 
                             </v-row>
 
@@ -149,11 +149,5 @@
 
     h2 {
         text-align: center;
-    }
-
-    .register {
-        text-decoration: none;
-        font-weight: bold;
-        color: green;
     }
 </style>

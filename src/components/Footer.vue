@@ -1,0 +1,22 @@
+<template>
+    <div id="app">
+            <v-footer color="#3eb4a7" padless>
+                <v-col
+                        class="text-center white--text"
+                        cols="12"
+                >
+                    <strong> {{ new Date().getFullYear() }} — Budget Tracker</strong>
+                </v-col>
+            </v-footer>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "Footer"
+    }
+</script>
+
+<style scoped>
+
+</style>

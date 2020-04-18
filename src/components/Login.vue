@@ -1,7 +1,7 @@
 <template>
-    <div id="app">
+    <div id="login" class="login">
         <v-container>
-            <v-row class="align-center">
+            <v-row class="logform">
                 <v-row class="justify-lg-end justify-sm-center pr-5 d-none d-sm-flex">
                     <v-img
                             alt="App Logo"
@@ -15,7 +15,7 @@
                 ></v-divider>
                 <v-col
                         cols="12"
-                        md="6"
+                        md="7"
                 >
 
                     <v-card
@@ -60,7 +60,7 @@
                                         color=#9090ee
                                         class="mr-5 mb-6"
                                         @click="validate"
-                                        to="/hello"
+                                        to="/main"
                                 >
                                     Zaloguj się
                                 </v-btn>
@@ -79,15 +79,13 @@
                             <v-row class="pt-7 pb-7 justify-center">
                                 <p class="pr-5 pt-2">Nie masz konta?</p>
 
-                                <router-link to="/register">
                                     <v-btn
-                                            text color="#3eb4a7"
-                                            class="register pr-5 pt-2"
+                                            outlined
+                                            to="/register"
+                                            color="#3eb4a7"
                                     >
                                         Zarejestruj się
                                     </v-btn>
-                                </router-link>
-
                             </v-row>
 
                         </v-form>
@@ -123,7 +121,7 @@
 
         methods: {
             validate() {
-                this.$refs.form.validate()
+                this.$refs.form.validate();
             },
             reset() {
                 this.$refs.form.reset()
@@ -141,9 +139,8 @@
         text-align: center;
     }
 
-    .register {
-        text-decoration: none;
-        font-weight: bold;
-        color: green;
+    .logform
+    {
+        margin-top: 50px;
     }
 </style>
