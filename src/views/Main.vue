@@ -65,9 +65,7 @@
                     </v-btn>
                     <p><strong>KALENDARZ</strong></p>
 
-                    <v-btn icon color="#9090ee">
-                        <v-icon x-large>mdi-cash-multiple</v-icon>
-                    </v-btn>
+                    <Income/>
                     <p><strong>PRZYCHODY</strong></p>
                 </v-col>
 
@@ -79,14 +77,10 @@
                         class="text-center"
                         md="5"
                 >
-                    <v-btn icon color="#9090ee">
-                        <v-icon x-large>mdi-bank</v-icon>
-                    </v-btn>
+                    <Savings/>
                     <p><strong>OSZCZĘDNOŚCI</strong></p>
 
-                    <v-btn icon color="#9090ee">
-                        <v-icon x-large>mdi-wallet</v-icon>
-                    </v-btn>
+                    <Expenses/>
                     <p><strong>WYDATKI</strong></p>
                 </v-col>
             </v-row>
@@ -98,11 +92,14 @@
     import ChartExpenses from "../components/ChartExpenses.vue";
     import ChartIncome from "../components/ChartIncome.vue";
     import ProgressBar from "../components/ProgressBar.vue";
+    import Income from "../components/Income.vue";
+    import Expenses from "../components/Expenses.vue";
+    import Savings from "../components/Savings.vue";
 
     export default {
         name: "Main",
         components: {
-            ChartExpenses, ChartIncome, ProgressBar
+            ChartExpenses, ChartIncome, ProgressBar, Income, Expenses, Savings
         }
     }
 </script>
