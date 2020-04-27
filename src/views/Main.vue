@@ -60,9 +60,7 @@
                         class="text-center"
                         md="5"
                 >
-                    <v-btn icon color="#9090ee">
-                        <v-icon x-large>mdi-calendar-today</v-icon>
-                    </v-btn>
+                    <Calendar/>
                     <p><strong>KALENDARZ</strong></p>
 
                     <Income/>
@@ -95,11 +93,12 @@
     import Income from "../components/Income.vue";
     import Expenses from "../components/Expenses.vue";
     import Savings from "../components/Savings.vue";
+    import Calendar from "../components/Calendar.vue";
 
     export default {
         name: "Main",
         components: {
-            ChartExpenses, ChartIncome, ProgressBar, Income, Expenses, Savings
+            ChartExpenses, ChartIncome, ProgressBar, Income, Expenses, Savings, Calendar
         }
     }
 </script>
