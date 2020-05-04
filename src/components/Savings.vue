@@ -65,6 +65,11 @@
                         </v-dialog>
                     </v-toolbar>
                 </template>
+
+                <template v-slot:item.progress="{ item }">
+                        <v-col cols="12" class="mr-0 ml-0 pl-0 pr-0"><v-progress-linear style="min-width: 50px" :value="(item.current/item.amount)*100" height="25" color="#9090EE" background-color="#c7c7f6"><strong>{{ Math.ceil((item.current/item.amount)*100) }}%</strong></v-progress-linear></v-col>
+                </template>
+
                 <template v-slot:item.action="{ item }">
                     <v-icon
                             small
@@ -106,6 +111,7 @@
                 },
                 { text: 'Cel', value: 'amount' },
                 { text: 'Aktualna kwota', value: 'current' },
+                { text: 'Postęp', value: 'progress' },
                 { text: 'Akcje', value: 'action', sortable: false },
             ],
             savings: [],
@@ -145,21 +151,25 @@
                         name: 'WAKACJE',
                         amount: 2500,
                         current: 0,
+                        progress: '0%',
                     },
                     {
                         name: 'KOMPUTER',
                         amount: 2000,
                         current: 200,
+                        progress: '10%',
                     },
                     {
                         name: 'MEBLE',
                         amount: 1200,
                         current: 300,
+                        progress: '25%',
                     },
                     {
                         name: 'SAMOCHÓD',
                         amount: 4000,
                         current: 3000,
+                        progress: '75%',
                     },
                 ]
             },

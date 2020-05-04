@@ -61,7 +61,10 @@
             <v-card class="daily">
                 <div v-for="name in names" v-bind:key="name">
                     <div v-if="dates[names.indexOf(name)] === focus">
-                        <p>{{ combine(names.indexOf(name)) }}</p>
+                        <p class="mt-4">{{ combine(names.indexOf(name)) }}</p>
+                        <v-divider
+                                horizontal
+                        ></v-divider>
                     </div>
                 </div>
             </v-card>
@@ -147,6 +150,5 @@
     padding-top: 10px;
     font-weight: bold;
     color: #9090ee;
-    background-color: lightgray;
     }
 </style>

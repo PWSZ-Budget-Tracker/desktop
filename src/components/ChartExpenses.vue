@@ -48,6 +48,17 @@
                         breakpoint: 480,
                         options: {
                             chart: {
+                                width: 400
+                            },
+                            legend: {
+                                show: false
+                            }
+                        }
+                    },
+                    {
+                        breakpoint: 300,
+                        options: {
+                            chart: {
                                 width: 200
                             },
                             legend: {

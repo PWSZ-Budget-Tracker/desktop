@@ -52,13 +52,34 @@
                             colors: ['#fff']
                         }
                     },
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 400
+                            },
+                            legend: {
+                                show: false
+                            }
+                        }
+                    },
+                    {
+                        breakpoint: 300,
+                        options: {
+                            chart: {
+                                width: 200
+                            },
+                            legend: {
+                                show: false
+                            }
+                        }
+                    }],
                     stroke: {
                         width: 1,
                         colors: ['#fff']
                     },
                     xaxis: {
-                        categories: ['PRACA', 'STYPENDIUM', 'URODZINY', 'INNE'
-                        ],
+                        categories: ['PRACA', 'STYPENDIUM', 'URODZINY', 'INNE'],
                     },
                     yaxis: {
                         labels: {
