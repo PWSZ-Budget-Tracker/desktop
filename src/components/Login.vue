@@ -16,6 +16,7 @@
                 <v-col
                         cols="12"
                         md="7"
+                        class="form"
                 >
 
                     <v-card
@@ -60,7 +61,6 @@
                                         color=#9090ee
                                         class="mr-5 mb-6"
                                         @click="validate"
-                                        to="/main"
                                 >
                                     Zaloguj się
                                 </v-btn>
@@ -98,30 +98,43 @@
 
 <script>
     export default {
-        data: () => ({
-            password: "",
-            valid: true,
-            value: true,
-            email: '',
-            emailRules: [
-                v => !!v || 'E-mail jest wymagany',
-                v => /.+@.+\..+/.test(v) || 'E-mail musi być prawidłowy',
-            ],
-            rules: {
-                required: value => !!value || "Hasło jest wymagane",
-                password: value => {
-                    const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
-                    return (
-                        pattern.test(value) ||
-                        "8 znaków, co najmniej jedna wielka litera, cyfra oraz znak specjalny"
-                    );
+        name: "Login",
+        data() {
+            return {
+                password: "",
+                valid: true,
+                value: true,
+                email: "",
+                emailRules: [
+                    v => !!v || 'E-mail jest wymagany',
+                    v => /.+@.+\..+/.test(v) || 'E-mail musi być prawidłowy',
+                ],
+                rules: {
+                    required: value => !!value || "Hasło jest wymagane",
+                    password: value => {
+                        const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
+                        return (
+                            pattern.test(value) ||
+                            "8 znaków, co najmniej jedna wielka litera, cyfra oraz znak specjalny"
+                        );
+                    }
                 }
             }
-        }),
+        },
 
         methods: {
             validate() {
-                this.$refs.form.validate();
+                if(this.$refs.form.validate())
+                {
+                    this.$store.dispatch('getToken', {
+                        email: this.email,
+                        password: this.password
+                    })
+                        .then(() => this.$router.push({name: 'main'}))
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                }
             },
             reset() {
                 this.$refs.form.reset()
@@ -142,5 +155,11 @@
     .logform
     {
         margin-top: 50px;
+    }
+
+    @media only screen and (min-width: 600px) and (max-width: 960px) {
+        .form {
+            margin-left: 10%;
+        }
     }
 </style>

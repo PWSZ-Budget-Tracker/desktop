@@ -1,6 +1,6 @@
 <template>
     <v-row justify="center">
-        <v-dialog v-model="dialog2" max-width="620">
+        <v-dialog v-model="expensesDialog" max-width="800">
             <template v-slot:activator="{ on }">
                 <v-btn dark v-on="on" icon color="#9090ee">
                     <v-icon x-large>mdi-wallet</v-icon>
@@ -30,9 +30,9 @@
                                 hide-details
                         ></v-text-field>
                         <v-spacer></v-spacer>
-                        <v-dialog v-model="dialog" max-width="500px">
+                        <v-dialog v-model="addExpensesDialog" max-width="500px">
                             <template v-slot:activator="{ on }">
-                                <v-btn color="#9090ee" dark class="mb-2" v-on="on">Nowa kategoria</v-btn>
+                                <v-btn color="#9090ee" dark class="mb-2" v-on="on">Nowy wydatek</v-btn>
                             </template>
                             <v-card>
                                 <v-card-title>
@@ -43,10 +43,21 @@
                                     <v-container>
                                         <v-row>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.name" label="Wydatki"></v-text-field>
+                                                <v-select
+                                                        v-model="selectedCategory"
+                                                        :items="categories"
+                                                        item-text="name"
+                                                        item-value="id"
+                                                        menu-props="auto"
+                                                        label="Wydatki"
+                                                        :disabled="disable"
+                                                ></v-select>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field v-model="editedItem.amount" label="Kwota"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-select v-model="choosedCurrency" :items="currencies" label="Waluta" :disabled="disable"></v-select>
                                             </v-col>
                                         </v-row>
                                     </v-container>
@@ -55,29 +66,37 @@
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
                                     <v-btn color="blue darken-1" text @click="close">Anuluj</v-btn>
-                                    <v-btn color="blue darken-1" text @click="save">Zapisz</v-btn>
+                                    <v-btn color="blue darken-1" text @click="addExpenses()">Zapisz</v-btn>
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
+
+                        <Categories toolbarTitle="WYDATKI"/>
+
                     </v-toolbar>
                 </template>
+
+                <template v-slot:item.currency="{ item }">
+                    {{ currencies[item.currencyId] }}
+                </template>
+
                 <template v-slot:item.action="{ item }">
                     <v-icon
                             small
                             class="mr-2"
-                            @click="editItem(item)"
+                            @click="editExpenses(item)"
                     >
                         mdi-pencil
                     </v-icon>
                     <v-icon
                             small
-                            @click="deleteItem(item)"
+                            @click="deleteExpenses(item)"
                     >
                         mdi-delete
                     </v-icon>
                 </template>
                 <template v-slot:no-data>
-                    <v-btn color="primary" @click="initialize">Reset</v-btn>
+                    <p class="pt-5">Brak wydatków</p>
                 </template>
             </v-data-table>
         </v-dialog>
@@ -85,23 +104,34 @@
 </template>
 
 <script>
+    import * as Currency from '../helpers/currency';
+    import Categories from "./Categories";
+    import axios from "axios";
+
     export default {
         name: "Expenses",
+        components: {
+            Categories
+        },
         data: () => ({
-            dialog: false,
-            dialog2: false,
+            addExpensesDialog: false,
+            expensesDialog: false,
             search: '',
+            selectedCategory: '',
+            choosedCurrency: '',
+            disable: false,
             headers: [
                 {
                     text: 'Wydatki',
                     align: 'start',
                     sortable: false,
-                    value: 'name',
+                    value: 'categoryName',
                 },
                 { text: 'Kwota', value: 'amount' },
+                { text: 'Waluta', value: 'currency.shortName' },
                 { text: 'Akcje', value: 'action', sortable: false },
             ],
-            expenses: [],
+            currencies: ["EUR", "USD", "PLN"],
             editedIndex: -1,
             editedItem: {
                 name: '',
@@ -115,8 +145,14 @@
 
         computed: {
             formTitle () {
-                return this.editedIndex === -1 ? 'Nowa kategoria wydatków' : 'Edytuj kategorie'
+                return this.editedIndex === -1 ? 'Nowy wydatek' : 'Edytuj wydatek'
             },
+            expenses() {
+                return this.$store.getters.getExpenses;
+            },
+            categories() {
+                return this.$store.getters.getCategories;
+            }
         },
 
         watch: {
@@ -126,69 +162,63 @@
         },
 
         created () {
-            this.initialize()
+            this.$store.dispatch("fetchExpenses", {});
         },
 
         methods: {
-            initialize () {
-                this.expenses = [
-                    {
-                        name: 'DOM',
-                        amount: 120,
-                    },
-                    {
-                        name: 'TRANSPORT',
-                        amount: 240,
-                    },
-                    {
-                        name: 'ZDROWIE',
-                        amount: 350,
-                    },
-                    {
-                        name: 'INNE',
-                        amount: 70,
-                    },
-                    {
-                        name: 'SPORT',
-                        amount: 410,
-                    },
-                    {
-                        name: 'JEDZENIE',
-                        amount: 60,
-                    },
-                    {
-                        name: 'WAKACJE',
-                        amount: 610,
-                    },
-                ]
-            },
-
-            editItem (item) {
+            editExpenses(item) {
+                this.disable = true
                 this.editedIndex = this.expenses.indexOf(item)
                 this.editedItem = Object.assign({}, item)
-                this.dialog = true
+                this.addExpensesDialog = true
             },
 
-            deleteItem (item) {
+            deleteExpenses(item) {
                 const index = this.expenses.indexOf(item)
-                confirm('Czy jesteś pewien, że chcesz usunąć tę kategorię?') && this.expenses.splice(index, 1)
+                if (confirm('Czy jesteś pewien, że chcesz usunąć ten wydatek?')) {
+                    axios.delete('/api/Expenses/Delete', {
+                        data: {expenseId: item.id}
+                    })
+                }
+                this.expenses.splice(index, 1)
+            },
+
+            addExpenses() {
+                if (this.editedIndex > -1) {
+                    Object.assign(this.expenses[this.editedIndex], this.editedItem)
+                    axios.put('/api/Expenses/Edit', {
+                        expenseId: this.editedItem.id,
+                        amount: parseInt(this.editedItem.amount)
+                    })
+                        .then(
+                            this.$store.dispatch('fetchExpenses')
+                        )
+                        .catch(error => {
+                            console.log(error)
+                        })
+                } else {
+                    axios.post('/api/Expenses/Add', {
+                        categoryId: this.selectedCategory,
+                        amount: parseInt(this.editedItem.amount),
+                        currencyId: Currency.getCurrency(this.choosedCurrency)
+                    })
+                        .then(
+                            this.$store.dispatch('fetchExpenses')
+                        )
+                        .catch(error => {
+                            console.log(error)
+                        })
+                }
+                this.close()
             },
 
             close () {
-                this.dialog = false
-                setTimeout(() => {
+                this.addExpensesDialog = false
+                this.disable = false
+                this.$nextTick(() => {
                     this.editedItem = Object.assign({}, this.defaultItem)
                     this.editedIndex = -1
-                }, 300)
-            },
-
-            save () {
-                if (this.editedIndex > -1) {
-                    Object.assign(this.expenses[this.editedIndex], this.editedItem)
-                } else {
-                    this.expenses.push(this.editedItem)
-                }
-                this.close()
+                })
             },
         },
     }

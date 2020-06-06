@@ -1,6 +1,6 @@
 <template>
     <v-row justify="center">
-        <v-dialog v-model="dialog" max-width="1200">
+        <v-dialog v-model="calendarDialog" max-width="1200">
             <template v-slot:activator="{ on }">
                 <v-btn dark v-on="on" icon color="#9090ee">
                     <v-icon x-large>mdi-calendar-today</v-icon>
@@ -22,7 +22,7 @@
                         <v-btn
                                 icon
                                 class="ma-2"
-                                @click="$refs.calendar.prev()"
+                                @click.native="$refs.calendar.prev()"
                         >
                             <v-icon>mdi-chevron-left</v-icon>
                         </v-btn>
@@ -30,7 +30,7 @@
                         <v-btn
                                 icon
                                 class="ma-2"
-                                @click="$refs.calendar.next()"
+                                @click.native="$refs.calendar.next()"
                         >
                             <v-icon>mdi-chevron-right</v-icon>
                         </v-btn>
@@ -43,11 +43,10 @@
                                 :weekdays="weekday"
                                 type="month"
                                 color="#3EB4A7"
-                                :now="today"
-                                :events="events"
+                                :events="getEvents"
                                 :event-color="getEventColor"
                                 :interval-count = 0
-                                @change="getEvents"
+                                @change="updateRange"
                                 @click:more="viewDay"
                                 @click:date="viewDay"
                         ></v-calendar>
@@ -57,15 +56,31 @@
 
         </v-dialog>
 
-        <v-dialog v-model="showModal" scrollable max-width="250">
+        <v-dialog v-model="dailyModal" scrollable max-width="250">
             <v-card class="daily">
-                <div v-for="name in names" v-bind:key="name">
-                    <div v-if="dates[names.indexOf(name)] === focus">
-                        <p class="mt-4">{{ combine(names.indexOf(name)) }}</p>
+                <div class="dailyExpense">
+                    <h1>WYDATKI</h1>
+                    <v-divider
+                                horizontal
+                    ></v-divider>
+                    <span v-for="value in combineExpenses()" v-bind:key="value">
+                        <p class="mt-4">{{ value }}</p>
                         <v-divider
                                 horizontal
                         ></v-divider>
-                    </div>
+                    </span>
+                </div>
+                <div class="dailyIncome">
+                    <h1>PRZYCHODY</h1>
+                    <v-divider
+                                horizontal
+                    ></v-divider>
+                    <span v-for="value in combineIncomes()" v-bind:key="value">
+                        <p class="mt-4">{{ value }}</p>
+                        <v-divider
+                                horizontal
+                        ></v-divider>
+                    </span>
                 </div>
             </v-card>
         </v-dialog>
@@ -78,18 +93,14 @@
         data: () => ({
             type: 'month',
             focus: '',
-            dialog: false,
-            showModal: false,
+            calendarDialog: false,
+            dailyModal: false,
             selectedElement: null,
             selectedOpen: false,
             start: null,
             merged: '',
             weekday: [1, 2, 3, 4, 5, 6, 0],
             events: [],
-            colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1', 'red'],
-            names: ['PRACA', 'STYPENDIUM', 'URODZINY', 'DOM', 'TRANSPORT', 'ZDROWIE', 'SPORT', 'JEDZENIE'],
-            dates: ['2020-04-01', '2020-04-02', '2020-04-21', '2020-04-02', '2020-04-02', '2020-04-02', '2020-04-21', '2020-04-23'],
-            amounts: ['2000zł', '500zł', '200zł', '800zł', '250zł', '80zł', '100zł', '340zł'],
         }),
         computed: {
             title () {
@@ -97,10 +108,8 @@
                 if (!start) {
                     return ''
                 }
-
                 const startMonth = this.monthFormatter(start)
                 const startYear = start.year
-
                 return `${startMonth} ${startYear}`
             },
             monthFormatter () {
@@ -108,37 +117,69 @@
                     timeZone: 'UTC', month: 'long',
                 })
             },
-        },
-        methods: {
-            getEvents ({start}) {
+            incomes() {
+                return this.$store.getters.getIncomes;
+            },
+            expenses() {
+                return this.$store.getters.getExpenses;
+            },
+            getEvents() {
                 const events = []
-
-                new Date(`${start.date}T00:00:00`)
-
-                const eventCount = 8;
-
-                for (let i = 0; i < eventCount; i++) {
+                for (let i = 0; i < this.incomes.length; i++) {
                     events.push({
-                        name: this.names[i] + " - " + this.amounts[i],
-                        start: this.dates[i],
-                        color: this.colors[i],
+                        name: this.incomes[i].categoryName + " - " + this.incomes[i].amount + "(" + this.incomes[i].currency.shortName + ")",
+                        start: this.incomes[i].timeStamp.slice(0,10),
+                        color: "#9090ee",
                     })
                 }
-                this.events = events
-                this.start = start
-            },
-            getEventColor (event) {
-                return event.color
+                for (let i = 0; i < this.expenses.length; i++) {
+                    events.push({
+                        name: this.expenses[i].categoryName + " - " + this.expenses[i].amount + "(" + this.expenses[i].currency.shortName + ")",
+                        start: this.expenses[i].timeStamp.slice(0,10),
+                        color: "#3eb4a7",
+                    })
+                }
+                return events;
+            }
+        },
+        methods: {
+            getEventColor (events) {
+                return events.color
             },
             setToday () {
                 this.focus = this.today
             },
+            updateRange({start,end}){
+                this.start = start;
+                this.end = end;
+            },
             viewDay ({ date }) {
                 this.focus = date
-                this.showModal = true
+                this.dailyModal = true
             },
-            combine (i) {
-                 return this.merged = this.names[i] + ' - ' + this.amounts[i];
+            combineExpenses () {
+                const merged = [];
+                let index = 0;
+                for(let i = 0; i < this.expenses.length; i++) {
+                    if(this.expenses[i].timeStamp.slice(0,10) === this.focus)
+                    {
+                        merged[index] = this.expenses[i].categoryName + " - " + this.expenses[i].amount + " (" + this.expenses[i].currency.shortName + ")"
+                        index++;
+                    }
+                }
+                return merged
+            },
+            combineIncomes () {
+                const merged = [];
+                let index = 0;
+                for(let i = 0; i < this.incomes.length; i++) {
+                    if(this.incomes[i].timeStamp.slice(0,10) === this.focus)
+                    {
+                        merged[index] = this.incomes[i].categoryName + " - " + this.incomes[i].amount + " (" + this.incomes[i].currency.shortName + ")"
+                        index++;
+                    }
+                }
+                return merged
             }
         },
     }
@@ -149,6 +190,11 @@
     text-align: center;
     padding-top: 10px;
     font-weight: bold;
+    }
+    .dailyIncome {
     color: #9090ee;
+    }
+    .dailyExpense {
+    color: #3eb4a7;
     }
 </style>

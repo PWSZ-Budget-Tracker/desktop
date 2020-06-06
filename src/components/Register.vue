@@ -43,8 +43,8 @@
 
                             <v-text-field
                                     class="pa-5 pt-0"
-                                    :value="confirmPassword"
-                                    v-model="confirmPassword"
+                                    :value="passwordConfirmation"
+                                    v-model="passwordConfirmation"
                                     label="Powtórz hasło"
                                     :type="'password'"
                                     :rules="confirmPasswordRules.concat(passwordConfirmationRule)"
@@ -60,7 +60,6 @@
                                         color=#9090ee
                                         class="mr-5 mb-6"
                                         @click="validate"
-                                        to="/hello"
                                 >
                                     Zarejestruj się
                                 </v-btn>
@@ -81,8 +80,8 @@
 
                                 <v-btn
                                         outlined
-                                        to="/login"
                                         color="#3eb4a7"
+                                        to="/login"
                                 >
                                     Zaloguj się
                                 </v-btn>
@@ -99,34 +98,48 @@
 
 <script>
     export default {
-        data: () => ({
-            password: "",
-            valid: true,
-            value: true,
-            email: "",
-            emailRules: [
-                v => !!v || 'E-mail jest wymagany',
-                v => /.+@.+\..+/.test(v) || 'E-mail musi być prawidłowy',
-            ],
-            rules: {
-                required: value => !!value || "Hasło jest wymagane",
-                password: value => {
-                    const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
-                    return (
-                        pattern.test(value) ||
-                        "8 znaków, co najmniej jedna wielka litera, cyfra oraz znak specjalny"
-                    );
-                }
-            },
-            confirmPassword: "",
-            confirmPasswordRules: [
-                v => !!v || 'Potwierdzenie hasła jest wymagane',
-            ]
-        }),
+        name: "Register",
+        data() {
+            return {
+                password: "",
+                valid: true,
+                value: true,
+                email: "",
+                passwordConfirmation: "",
+                emailRules: [
+                    v => !!v || 'E-mail jest wymagany',
+                    v => /.+@.+\..+/.test(v) || 'E-mail musi być prawidłowy',
+                ],
+                rules: {
+                    required: value => !!value || "Hasło jest wymagane",
+                    password: value => {
+                        const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
+                        return (
+                            pattern.test(value) ||
+                            "8 znaków, co najmniej jedna wielka litera, cyfra oraz znak specjalny"
+                        );
+                    }
+                },
+                confirmPasswordRules: [
+                    v => !!v || 'Potwierdzenie hasła jest wymagane',
+                ]
+            }
+        },
 
         methods: {
             validate() {
-                this.$refs.form.validate()
+                if(this.$refs.form.validate())
+                {
+                    this.$store.dispatch('userRegister', {
+                        email: this.email,
+                        password: this.password,
+                        passwordConfirmation: this.passwordConfirmation
+                    })
+                        .then(() => this.$router.push({name: 'main'}))
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                }
             },
             reset() {
                 this.$refs.form.reset()
@@ -136,7 +149,7 @@
         computed: {
             passwordConfirmationRule() {
                 return () =>
-                    this.password === this.confirmPassword || "Hasło musi być takie same";
+                    this.password === this.passwordConfirmation || "Hasło musi być takie same";
             }
         },
     }

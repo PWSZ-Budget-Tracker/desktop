@@ -13,14 +13,15 @@
   },
   "main": "background.js",
   "dependencies": {
-    "apexcharts": "^3.18.1",
+    "apexcharts": "^3.19.2",
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "electron": "^8.1.1",
     "vue": "^2.6.11",
     "vue-apexcharts": "^1.5.3",
     "vue-router": "^3.1.6",
-    "vuetify": "^2.2.11"
+    "vuetify": "^2.2.11",
+    "vuex": "^3.3.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.2.0",
