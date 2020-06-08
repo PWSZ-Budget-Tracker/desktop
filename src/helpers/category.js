@@ -2,10 +2,10 @@ function getType(choosedType) {
     let type = 0;
     switch (choosedType) {
         case "PRZYCHODY":
-            type = 0;
+            type = 1;
             break;
         case "WYDATKI":
-            type = 1;
+            type = 0;
             break;
         default:
     }

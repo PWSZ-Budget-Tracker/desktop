@@ -186,6 +186,7 @@
                 this.editedIndex = this.goals.indexOf(item)
                 this.editedItem = Object.assign({}, item)
                 this.addGoalsDialog = true
+                this.whichButton = 2
             },
 
             deleteGoal(item) {
@@ -201,40 +202,36 @@
             addGoal() {
                 if (this.editedIndex > -1) {
                     Object.assign(this.goals[this.editedIndex], this.editedItem)
-                    if (this.editedItem.amount === 0) {
+                    if (this.whichButton === 2) {
+                        alert('2')
                         axios.put('/api/Goal/Edit', {
                             goalId: this.editedItem.id,
                             name: this.editedItem.name,
                             goalAmount: parseInt(this.editedItem.goalAmount)
                         })
-                            .then(
-                                this.$store.dispatch('fetchGoals')
-                            )
                             .catch(error => {
                                 console.log(error)
                             })
+                            this.whichButton = 0
                     }
                     else if(this.whichButton === 1) {
+                        alert('3')
                         axios.put('/api/Goal/AddAmount', {
                             goalId: this.editedItem.id,
                             amount: parseInt(this.editedItem.amount),
                         })
-                            .then(
-                                this.$store.dispatch('fetchGoals')
-                            )
                             .catch(error => {
                                 console.log(error)
                             })
+                        this.whichButton = 0
                     } else {
+                        alert('4')
                         axios.delete('/api/Goal/DeleteAmount', {
                             data: {
                                 goalId: this.editedItem.id,
                                 amount: parseInt(this.editedItem.amount)
                             }
                         })
-                            .then(
-                                this.$store.dispatch('fetchGoals')
-                            )
                             .catch(error => {
                                 console.log(error)
                             })
@@ -245,13 +242,11 @@
                         goalAmount: parseInt(this.editedItem.goalAmount),
                         currencyId: Currency.getCurrency(this.choosedCurrency)
                     })
-                        .then(
-                            this.$store.dispatch('fetchGoals')
-                        )
                         .catch(error => {
                             console.log(error)
                         })
                 }
+                this.$store.dispatch('fetchGoals')
                 this.visible = true
                 this.addDisable = false
                 this.editDisable = false
@@ -275,7 +270,6 @@
                 this.editedIndex = this.goals.indexOf(item)
                 this.editedItem = Object.assign({}, item)
                 this.addGoalsDialog = true
-                this.whichButton = 2
             },
 
             close () {
@@ -287,6 +281,7 @@
                     this.editedItem = Object.assign({}, this.defaultItem)
                     this.editedIndex = -1
                 })
+                this.$store.dispatch('fetchGoals')
             },
 
             activateReset() {

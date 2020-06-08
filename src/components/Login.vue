@@ -130,7 +130,6 @@
                         email: this.email,
                         password: this.password
                     })
-                        .then(() => this.$router.push({name: 'main'}))
                         .catch(function (error) {
                             console.log(error);
                         });

@@ -21,7 +21,10 @@ const routes = [
         {
             path: '/main',
             name: 'main',
-            component: Main
+            component: Main,
+            meta: {
+                requiresAuth: true
+            }
         }
     ];
 

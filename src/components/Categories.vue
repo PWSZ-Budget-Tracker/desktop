@@ -175,15 +175,13 @@
                         type: Type.getType(this.toolbarTitle),
                         name: this.editedItem.name
                     })
-                        .then(
-                            this.$store.dispatch("fetchCategories", {
-                                typeId: Type.getType(this.toolbarTitle)
-                            })
-                        )
                         .catch(error => {
                             console.log(error)
                         })
                 }
+                this.$store.dispatch("fetchCategories", {
+                    typeId: Type.getType(this.toolbarTitle)
+                })
                 this.close()
             },
 
@@ -193,6 +191,10 @@
                     this.editedItem = Object.assign({}, this.defaultItem)
                     this.editedIndex = -1
                 })
+                this.$store.dispatch("fetchCategories", {
+                    typeId: Type.getType(this.toolbarTitle)
+                })
+                this.$emit('clicked', this.categories)
             },
         },
     }

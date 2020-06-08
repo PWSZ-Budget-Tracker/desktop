@@ -1,5 +1,6 @@
 <template>
   <v-app>
+      <app-header v-if="token != null" :isLogged="isLogged"></app-header>
       <Header/>
 
       <v-content>
@@ -19,11 +20,21 @@
         name: 'App',
 
         components: {
-            Header, Footer
+            'app-header': Header,
+            Footer
         },
 
-        data: () => ({
-            //
-        }),
+        data() {
+            return {
+                isLogged: localStorage.getItem("token"),
+                visible: false
+            };
+        },
+
+        computed: {
+            token() {
+                return this.$store.getters.loggedIn;
+            }
+        }
     };
 </script>

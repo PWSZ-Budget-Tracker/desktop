@@ -72,7 +72,7 @@
                         </v-dialog>
                         <v-spacer></v-spacer>
 
-                        <Categories toolbarTitle="PRZYCHODY"/>
+                        <Categories toolbarTitle="PRZYCHODY" @clicked="close"/>
 
                     </v-toolbar>
                 </template>
@@ -143,7 +143,6 @@
                 name: '',
                 amount: 0,
             },
-            //props: ['category'],
         }),
 
         computed: {
@@ -193,9 +192,6 @@
                         incomeId: this.editedItem.id,
                         amount: parseInt(this.editedItem.amount)
                     })
-                        .then(
-                            this.$store.dispatch('fetchIncomes')
-                        )
                         .catch(error => {
                             console.log(error)
                         })
@@ -205,13 +201,11 @@
                         amount: parseInt(this.editedItem.amount),
                         currencyId: Currency.getCurrency(this.choosedCurrency)
                     })
-                        .then(
-                            this.$store.dispatch('fetchIncomes')
-                        )
                         .catch(error => {
                             console.log(error)
                         })
                 }
+                this.$store.dispatch('fetchIncomes')
                 this.close()
             },
 
@@ -222,6 +216,7 @@
                     this.editedItem = Object.assign({}, this.defaultItem)
                     this.editedIndex = -1
                 })
+                this.$store.dispatch('fetchIncomes')
             },
         },
     }

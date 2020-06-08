@@ -11,17 +11,13 @@ export default {
     },
     actions: {
         fetchGoals(context) {
-            return new Promise((resolve, reject) => {
                 axios.get('/api/Goal/GetAll')
                     .then(response => {
                         context.commit('setGoals', response.data.payload)
-                        resolve(response)
                     })
                     .catch(error => {
                         console.log(error)
-                        reject(error)
                     })
-            })
         },
     },
     getters : {

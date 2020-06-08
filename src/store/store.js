@@ -5,6 +5,7 @@ import categories from './modules/categories'
 import incomes from './modules/incomes'
 import expenses from './modules/expenses'
 import goals from './modules/goals'
+import router from '@/router'
 
 Vue.use(Vuex)
 axios.defaults.baseURL = 'https://pwsz-budget-tracker.azurewebsites.net';
@@ -31,7 +32,6 @@ export default new Vuex.Store({
     },
     actions: {
         getToken(context, credentials) {
-            return new Promise((resolve, reject) => {
                 axios.post('/api/Authentication/Login', {
                     email: credentials.email,
                     password: credentials.password,
@@ -42,7 +42,7 @@ export default new Vuex.Store({
                             const token = response.data.payload.accessToken
                             localStorage.setItem('access_token', token)
                             context.commit('retrieveToken', token)
-                            resolve(response)
+                            router.push('/main')
                         }
                         else
                         {
@@ -51,12 +51,9 @@ export default new Vuex.Store({
                     })
                     .catch(error => {
                         console.log(error)
-                        reject(error)
                     })
-            })
         },
         userRegister(context, credentials) {
-            return new Promise((resolve, reject) => {
                 axios.post('/api/Authentication/Register', {
                     email: credentials.email,
                     password: credentials.password,
@@ -65,8 +62,7 @@ export default new Vuex.Store({
                     .then(response => {
                         if(response.data.successful)
                         {
-                            alert("Zarejestrowano pomyślnie!")
-                            resolve(response)
+                            alert("Zarejestrowano pomyślnie! Zaloguj się!")
                         }
                         else
                         {
@@ -74,17 +70,13 @@ export default new Vuex.Store({
                         }
                     })
                     .catch(error => {
-                        reject(error)
+                        console.log(error)
                     })
-            })
         },
         destroyToken(context) {
             if (context.getters.loggedIn) {
-                return new Promise((resolve) => {
                     context.commit('destroyToken')
                     localStorage.removeItem('access_token')
-                    resolve()
-                })
             }
         },
     },

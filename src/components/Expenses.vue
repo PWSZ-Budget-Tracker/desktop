@@ -71,7 +71,7 @@
                             </v-card>
                         </v-dialog>
 
-                        <Categories toolbarTitle="WYDATKI"/>
+                        <Categories toolbarTitle="WYDATKI" @clicked="close"/>
 
                     </v-toolbar>
                 </template>
@@ -119,6 +119,7 @@
             search: '',
             selectedCategory: '',
             choosedCurrency: '',
+            expensesCategories: [],
             disable: false,
             headers: [
                 {
@@ -190,9 +191,6 @@
                         expenseId: this.editedItem.id,
                         amount: parseInt(this.editedItem.amount)
                     })
-                        .then(
-                            this.$store.dispatch('fetchExpenses')
-                        )
                         .catch(error => {
                             console.log(error)
                         })
@@ -202,13 +200,11 @@
                         amount: parseInt(this.editedItem.amount),
                         currencyId: Currency.getCurrency(this.choosedCurrency)
                     })
-                        .then(
-                            this.$store.dispatch('fetchExpenses')
-                        )
                         .catch(error => {
                             console.log(error)
                         })
                 }
+                this.$store.dispatch('fetchExpenses')
                 this.close()
             },
 
@@ -219,6 +215,7 @@
                     this.editedItem = Object.assign({}, this.defaultItem)
                     this.editedIndex = -1
                 })
+                this.$store.dispatch('fetchExpenses')
             },
         },
     }

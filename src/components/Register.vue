@@ -135,7 +135,6 @@
                         password: this.password,
                         passwordConfirmation: this.passwordConfirmation
                     })
-                        .then(() => this.$router.push({name: 'main'}))
                         .catch(function (error) {
                             console.log(error);
                         });

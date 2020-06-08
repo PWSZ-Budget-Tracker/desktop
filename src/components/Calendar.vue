@@ -190,11 +190,14 @@
     text-align: center;
     padding-top: 10px;
     font-weight: bold;
+    height: 500px;
     }
     .dailyIncome {
     color: #9090ee;
+    background-color: white;
     }
     .dailyExpense {
     color: #3eb4a7;
+    background-color: white;
     }
 </style>
