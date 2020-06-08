@@ -203,7 +203,6 @@
                 if (this.editedIndex > -1) {
                     Object.assign(this.goals[this.editedIndex], this.editedItem)
                     if (this.whichButton === 2) {
-                        alert('2')
                         axios.put('/api/Goal/Edit', {
                             goalId: this.editedItem.id,
                             name: this.editedItem.name,
@@ -215,7 +214,6 @@
                             this.whichButton = 0
                     }
                     else if(this.whichButton === 1) {
-                        alert('3')
                         axios.put('/api/Goal/AddAmount', {
                             goalId: this.editedItem.id,
                             amount: parseInt(this.editedItem.amount),
@@ -225,7 +223,6 @@
                             })
                         this.whichButton = 0
                     } else {
-                        alert('4')
                         axios.delete('/api/Goal/DeleteAmount', {
                             data: {
                                 goalId: this.editedItem.id,
